@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+
+  frontend:
+    image: nginx
+    ports:
+      - "8189:80"  # Настройка порта
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./frontend/static:/usr/share/nginx/html/static
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
